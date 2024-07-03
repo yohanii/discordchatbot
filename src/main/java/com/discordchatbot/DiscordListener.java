@@ -1,5 +1,6 @@
 package com.discordchatbot;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -8,11 +9,16 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 
+import java.util.Random;
+
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class DiscordListener extends ListenerAdapter {
 
-    public static final int MAX_CONTENT_LENGTH = 9;
+    private final QuotesMemoryRepository quotesRepository;
+
+    private static final int MAX_CONTENT_LENGTH = 9;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -42,10 +48,15 @@ public class DiscordListener extends ListenerAdapter {
         }
 
         int count = Integer.parseInt(content);
+        int quotesCount = quotesRepository.count();
 
         for (int i = 0; i < count; i++) {
-            channel.sendMessage("명언").queue();
+            channel.sendMessage(quotesRepository.findById(getRandomNumber(quotesCount))).queue();
         }
+    }
+
+    private static int getRandomNumber(int max) {
+        return new Random().nextInt(max);
     }
 
     private boolean isPositiveInteger(String content) {
