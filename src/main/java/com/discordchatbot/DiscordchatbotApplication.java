@@ -15,12 +15,13 @@ public class DiscordchatbotApplication {
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(DiscordchatbotApplication.class, args);
-		DiscordBotTokenComponent bean = context.getBean(DiscordBotTokenComponent.class);
+		DiscordBotTokenComponent discordBotTokenComponent = context.getBean(DiscordBotTokenComponent.class);
+		DiscordListener discordListener = context.getBean(DiscordListener.class);
 
-		JDA jda = JDABuilder.createDefault(bean.getToken())
+		JDA jda = JDABuilder.createDefault(discordBotTokenComponent.getToken())
 				.setActivity(Activity.playing("메시지 대기"))
 				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
-				.addEventListeners(new DiscordListener())
+				.addEventListeners(discordListener)
 				.build();
 	}
 

@@ -6,8 +6,10 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class DiscordListener extends ListenerAdapter {
 
     public static final int MAX_CONTENT_LENGTH = 9;
