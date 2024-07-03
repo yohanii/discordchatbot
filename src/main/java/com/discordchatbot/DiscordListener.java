@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 @Slf4j
 public class DiscordListener extends ListenerAdapter {
 
+    public static final int MAX_CONTENT_LENGTH = 9;
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 
@@ -27,7 +29,13 @@ public class DiscordListener extends ListenerAdapter {
             return;
         }
 
-        if (!isPositiveInteger(message.getContentDisplay())) {
+        sendWithCount(content, channel);
+
+    }
+
+    private void sendWithCount(String content, TextChannel channel) {
+
+        if (!isPositiveInteger(content)) {
             return;
         }
 
@@ -36,10 +44,9 @@ public class DiscordListener extends ListenerAdapter {
         for (int i = 0; i < count; i++) {
             channel.sendMessage("명언").queue();
         }
-
     }
 
     private boolean isPositiveInteger(String content) {
-        return content != null && !content.isEmpty() && !content.equals("0") && content.length() < 9 && content.matches("\\d+");
+        return content != null && !content.isEmpty() && !content.equals("0") && content.length() < MAX_CONTENT_LENGTH && content.matches("\\d+");
     }
 }
