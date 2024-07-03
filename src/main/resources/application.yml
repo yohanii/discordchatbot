@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: discordchatbot
+
+discord:
+  bot:
+    token: MTI1Nzk3ODAzMDc2MDkxOTEyMw.GPK6rS.mwsfVfwbjiawWvUggrHN7JtQmvTs20kFzK4DFU
