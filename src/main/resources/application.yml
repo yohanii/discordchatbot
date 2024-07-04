@@ -4,4 +4,4 @@ spring:
 
 discord:
   bot:
-    token: MTI1Nzk3ODAzMDc2MDkxOTEyMw.GPK6rS.mwsfVfwbjiawWvUggrHN7JtQmvTs20kFzK4DFU
+    token: ${DISCORD_BOT_TOKEN}
