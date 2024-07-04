@@ -1,5 +1,7 @@
 package com.discordchatbot;
 
+import com.discordchatbot.entity.Quote;
+import com.discordchatbot.repository.QuotesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
@@ -9,6 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 @Slf4j
@@ -16,7 +19,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class DiscordListener extends ListenerAdapter {
 
-    private final QuotesMemoryRepository quotesRepository;
+    private final QuotesRepository quotesRepository;
 
     private static final int MAX_CONTENT_LENGTH = 9;
 
@@ -48,15 +51,17 @@ public class DiscordListener extends ListenerAdapter {
         }
 
         int count = Integer.parseInt(content);
-        int quotesCount = quotesRepository.count();
+        long quotesCount = quotesRepository.count();
 
         for (int i = 0; i < count; i++) {
-            channel.sendMessage(quotesRepository.findById(getRandomNumber(quotesCount))).queue();
+            Quote quote = quotesRepository.findById(getRandomNumber(quotesCount))
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
+            channel.sendMessage(quote.getContent()).queue();
         }
     }
 
-    private static int getRandomNumber(int max) {
-        return new Random().nextInt(max);
+    private static long getRandomNumber(long max) {
+        return new Random().nextLong(max);
     }
 
     private boolean isPositiveInteger(String content) {
