@@ -1,7 +1,7 @@
 package com.discordchatbot;
 
 import com.discordchatbot.entity.Quote;
-import com.discordchatbot.repository.QuotesRepository;
+import com.discordchatbot.service.QuotesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
@@ -11,15 +11,14 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class DiscordListener extends ListenerAdapter {
 
-    private final QuotesRepository quotesRepository;
+    private final QuotesService quotesService;
 
     private static final int MAX_CONTENT_LENGTH = 9;
 
@@ -40,28 +39,22 @@ public class DiscordListener extends ListenerAdapter {
             return;
         }
 
-        sendWithCount(content, channel);
+
+        if (isPositiveInteger(content)) {
+            sendWithCount(content, channel);
+        }
+
 
     }
 
     private void sendWithCount(String content, TextChannel channel) {
 
-        if (!isPositiveInteger(content)) {
-            return;
-        }
-
         int count = Integer.parseInt(content);
-        long quotesCount = quotesRepository.count();
 
-        for (int i = 0; i < count; i++) {
-            Quote quote = quotesRepository.findById(getRandomNumber(quotesCount))
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
+        List<Quote> quotes = quotesService.getDBRandomQuotes(count);
+        for (Quote quote: quotes) {
             channel.sendMessage(quote.getContent()).queue();
         }
-    }
-
-    private static long getRandomNumber(long max) {
-        return new Random().nextLong(max);
     }
 
     private boolean isPositiveInteger(String content) {
