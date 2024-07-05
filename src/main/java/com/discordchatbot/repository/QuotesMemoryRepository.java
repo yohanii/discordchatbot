@@ -1,4 +1,4 @@
-package com.discordchatbot;
+package com.discordchatbot.repository;
 
 import org.springframework.stereotype.Repository;
 
