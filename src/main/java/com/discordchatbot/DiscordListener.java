@@ -17,33 +17,6 @@ public class DiscordListener extends ListenerAdapter {
 
     private final QuotesService quotesService;
 
-    private static final int MAX_CONTENT_LENGTH = 9;
-
-//    @Override
-//    public void onMessageReceived(MessageReceivedEvent event) {
-//
-//        User user = event.getAuthor();
-//        TextChannel channel = event.getChannel().asTextChannel();
-//        Message message = event.getMessage();
-//        String content = message.getContentDisplay();
-//
-//        log.info("user: " + user.getName());
-//        log.info("user.isBot(): " + user.isBot());
-//        log.info("channel: " + channel.getName());
-//        log.info("message: " + content);
-//
-//        if (user.isBot()) {
-//            return;
-//        }
-//
-//
-//        if (isPositiveInteger(content)) {
-//            sendWithCount(content, channel);
-//        }
-//
-//
-//    }
-
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         log.info("onSlashCommandInteraction : " + event.getName());
@@ -105,17 +78,4 @@ public class DiscordListener extends ListenerAdapter {
         event.reply("실패했습니다.").queue();
     }
 
-//    private void sendWithCount(String content, TextChannel channel) {
-//
-//        int count = Integer.parseInt(content);
-//
-//        List<Quote> quotes = quotesService.getDBRandomQuotes(count);
-//        for (Quote quote: quotes) {
-//            channel.sendMessage(quote.getContent()).queue();
-//        }
-//    }
-//
-//    private boolean isPositiveInteger(String content) {
-//        return content != null && !content.isEmpty() && !content.equals("0") && content.length() < MAX_CONTENT_LENGTH && content.matches("\\d+");
-//    }
 }

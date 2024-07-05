@@ -23,6 +23,11 @@ public class DiscordchatbotApplication {
 		DiscordBotTokenComponent discordBotTokenComponent = context.getBean(DiscordBotTokenComponent.class);
 		DiscordListener discordListener = context.getBean(DiscordListener.class);
 
+		createJDA(discordBotTokenComponent, discordListener);
+	}
+
+	private static void createJDA(DiscordBotTokenComponent discordBotTokenComponent, DiscordListener discordListener) {
+
 		JDA jda = JDABuilder.createDefault(discordBotTokenComponent.getToken())
 				.setActivity(Activity.playing("메시지 대기"))
 				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
