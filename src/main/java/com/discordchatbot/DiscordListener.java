@@ -1,5 +1,6 @@
 package com.discordchatbot;
 
+import com.discordchatbot.dto.QuoteDto;
 import com.discordchatbot.service.QuotesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class DiscordListener extends ListenerAdapter {
                 event.reply("hi api-count").queue();
                 break;
             case "db-random":
-                event.reply("hi db-random").queue();
+                dbRandom(event);
                 break;
             case "db-count":
                 event.reply("hi db-count").queue();
@@ -66,6 +67,13 @@ public class DiscordListener extends ListenerAdapter {
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
         }
+    }
+
+    private void dbRandom(SlashCommandInteractionEvent event) {
+
+        QuoteDto quoteDto = quotesService.getDBRandomQuote();
+
+        event.reply("\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor()).queue();
     }
 
     private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
