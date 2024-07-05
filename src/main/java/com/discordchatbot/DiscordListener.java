@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -57,7 +59,8 @@ public class DiscordListener extends ListenerAdapter {
                 dbRandom(event);
                 break;
             case "db-count":
-                event.reply("hi db-count").queue();
+                int num = event.getOption("num").getAsInt();
+                dbCount(event, num);
                 break;
             case "db-add":
                 String author = event.getOption("author").getAsString();
@@ -67,6 +70,21 @@ public class DiscordListener extends ListenerAdapter {
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
         }
+    }
+
+    private void dbCount(SlashCommandInteractionEvent event, int num) {
+
+        List<QuoteDto> quoteDtos = quotesService.getDBRandomQuotes(num);
+
+        StringBuilder sb = new StringBuilder();
+        for (QuoteDto quoteDto : quoteDtos) {
+            sb.append("\"")
+                    .append(quoteDto.getQuote())
+                    .append("\" -")
+                    .append(quoteDto.getAuthor())
+                    .append("\n");
+        }
+        event.reply(sb.toString()).queue();
     }
 
     private void dbRandom(SlashCommandInteractionEvent event) {

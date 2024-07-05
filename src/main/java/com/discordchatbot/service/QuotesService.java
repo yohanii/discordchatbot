@@ -16,25 +16,19 @@ public class QuotesService {
 
     private final QuotesRepository quotesRepository;
 
-    public List<Quote> getDBRandomQuotes(int count) {
+    public List<QuoteDto> getDBRandomQuotes(int count) {
 
-        List<Quote> result = new ArrayList<>();
+        List<QuoteDto> result = new ArrayList<>();
 
         long quotesCount = quotesRepository.count();
-        log.info("quotesCount : " + quotesCount);
-
 
         for (int i = 0; i < count; i++) {
             Quote quote = quotesRepository.findById(getRandomNumber(quotesCount))
                     .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
-            result.add(quote);
+            result.add(new QuoteDto(quote.getAuthor(), quote.getQuote()));
         }
 
         return result;
-    }
-
-    private static long getRandomNumber(long max) {
-        return new Random().nextLong(max);
     }
 
     public boolean addQuote(String author, String quote) {
@@ -53,9 +47,13 @@ public class QuotesService {
 
         long count = quotesRepository.count();
 
-        Quote quote = quotesRepository.findById(new Random().nextLong(count) + 1)
+        Quote quote = quotesRepository.findById(getRandomNumber(count))
                 .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 없습니다."));
 
         return new QuoteDto(quote.getAuthor(), quote.getQuote());
+    }
+
+    private long getRandomNumber(long max) {
+        return new Random().nextLong(max) + 1;
     }
 }
