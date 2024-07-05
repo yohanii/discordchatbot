@@ -22,8 +22,8 @@ public class DiscordListener extends ListenerAdapter {
         log.info("onSlashCommandInteraction : " + event.getName());
 
         switch (event.getName()) {
-            case "api-random":
-                event.reply("hi api-random").queue();
+            case "api-today":
+                apiToday(event);
                 break;
             case "api-count":
                 event.reply("hi api-count").queue();
@@ -43,6 +43,13 @@ public class DiscordListener extends ListenerAdapter {
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
         }
+    }
+
+    private void apiToday(SlashCommandInteractionEvent event) {
+
+        QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
+
+        event.reply("\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor()).queue();
     }
 
     private void dbCount(SlashCommandInteractionEvent event, int num) {

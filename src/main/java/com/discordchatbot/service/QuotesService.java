@@ -2,9 +2,14 @@ package com.discordchatbot.service;
 
 import com.discordchatbot.dto.QuoteDto;
 import com.discordchatbot.entity.Quote;
+import com.discordchatbot.feign.QuotesFeignClient;
+import com.discordchatbot.feign.response.QuoteResponse;
+import com.discordchatbot.feign.response.QuotesApiResponse;
+import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,6 +20,10 @@ import java.util.*;
 public class QuotesService {
 
     private final QuotesRepository quotesRepository;
+    private final QuotesFeignClient quotesFeignClient;
+
+    @Value("${quotes.api-key}")
+    private String QUOTES_API_KEY;
 
     public List<QuoteDto> getDBRandomQuotes(int count) {
 
@@ -55,5 +64,20 @@ public class QuotesService {
 
     private long getRandomNumber(long max) {
         return new Random().nextLong(max) + 1;
+    }
+
+    public QuoteDto getAPIQuoteOfTheDay() {
+
+        QuotesApiResponse<QuotesResponse> response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
+        List<QuoteResponse> quotes = response.getContents().getQuotes();
+
+        if (quotes.size() == 1) {
+
+            QuoteResponse quote = quotes.getFirst();
+
+            return new QuoteDto(quote.getAuthor(), quote.getQuote());
+        }
+
+        return null;
     }
 }
