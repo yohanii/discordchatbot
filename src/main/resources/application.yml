@@ -28,3 +28,6 @@ logging:
 discord:
   bot:
     token: ${DISCORD_BOT_TOKEN}
+
+quotes:
+  api-key: tNNXSoBZwgz3A9C94bl1Aej6MPVUTzgAPXq5mcJK

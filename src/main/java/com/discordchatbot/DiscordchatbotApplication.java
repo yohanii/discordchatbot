@@ -9,12 +9,14 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
 
 @Slf4j
+@EnableFeignClients
 @SpringBootApplication
 public class DiscordchatbotApplication {
 
@@ -37,12 +39,7 @@ public class DiscordchatbotApplication {
 		CommandListUpdateAction commands = jda.updateCommands();
 
 		commands.addCommands(
-				Commands.slash("api-random", "Quotes API로 random한 명언 출력")
-		);
-
-		commands.addCommands(
-				Commands.slash("api-count", "Quotes API로 num 개수만큼 명언 출력")
-						.addOption(INTEGER, "num", "0 < num < 10", true)
+				Commands.slash("api-today", "Quotes API로 오늘의 명언 출력")
 		);
 
 		commands.addCommands(

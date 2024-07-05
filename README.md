@@ -5,11 +5,8 @@
 - 일정 시간마다 자동으로 명언 출력 with Quotes API
 
 ### 명령어
-- `/api-random`
-  - Quotes API로 random한 명언 출력
-- `/api-count {num}` 
-  - 0 < num < 10
-  - Quotes API로 num 개수만큼 명언 출력
+- `/api-today`
+  - Quotes API로 오늘의 명언 출력
 - `/db-random`
   - DB에서 random한 명언 출력
 - `/db-count {num}` 
