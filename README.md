@@ -5,6 +5,8 @@
 - 일정 시간마다 자동으로 명언 출력 with Quotes API
 
 ### 명령어
+- `/help`
+  - 명령어 목록과 사용 방법 출력
 - `/api-today`
   - Quotes API로 오늘의 명언 출력
 - `/db-random`

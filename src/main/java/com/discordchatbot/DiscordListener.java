@@ -22,6 +22,9 @@ public class DiscordListener extends ListenerAdapter {
         log.info("onSlashCommandInteraction : " + event.getName());
 
         switch (event.getName()) {
+            case "help":
+                help(event);
+                break;
             case "api-today":
                 apiToday(event);
                 break;
@@ -43,6 +46,23 @@ public class DiscordListener extends ListenerAdapter {
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
         }
+    }
+
+    private void help(SlashCommandInteractionEvent event) {
+        event.reply(
+                "### 명령어\n" +
+                        "- `/help`\n" +
+                        "  - 명령어 목록과 사용 방법 출력\n" +
+                        "- `/api-today`\n" +
+                        "  - Quotes API로 오늘의 명언 출력\n" +
+                        "- `/db-random`\n" +
+                        "  - DB에서 random한 명언 출력\n" +
+                        "- `/db-count {num}` \n" +
+                        "  - 0 < num < 10\n" +
+                        "  - DB에서 num 개수만큼 명언 출력\n" +
+                        "- `/db-add {author} {quote}`\n" +
+                        "  - DB에 명언 추가"
+        ).queue();
     }
 
     private void apiToday(SlashCommandInteractionEvent event) {
