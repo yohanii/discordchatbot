@@ -39,6 +39,10 @@ public class DiscordchatbotApplication {
 		CommandListUpdateAction commands = jda.updateCommands();
 
 		commands.addCommands(
+				Commands.slash("help", "명령어 목록과 사용 방법 출력")
+		);
+
+		commands.addCommands(
 				Commands.slash("api-today", "Quotes API로 오늘의 명언 출력")
 		);
 
