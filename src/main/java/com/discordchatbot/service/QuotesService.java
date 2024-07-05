@@ -38,4 +38,16 @@ public class QuotesService {
     private static long getRandomNumber(long max) {
         return new Random().nextLong(max);
     }
+
+    public boolean addQuote(String author, String quote) {
+
+        Quote quoteToAdd = Quote.builder()
+                .author(author)
+                .quote(quote)
+                .build();
+
+        Quote saved = quotesRepository.save(quoteToAdd);
+
+        return saved.getId() != null;
+    }
 }
