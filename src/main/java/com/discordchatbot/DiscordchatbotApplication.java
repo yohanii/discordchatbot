@@ -25,16 +25,12 @@ public class DiscordchatbotApplication {
 		DiscordBotTokenComponent discordBotTokenComponent = context.getBean(DiscordBotTokenComponent.class);
 		DiscordListener discordListener = context.getBean(DiscordListener.class);
 
-		createJDA(discordBotTokenComponent, discordListener);
+		JDA jda = createJDA(discordBotTokenComponent, discordListener);
+
+		addSlashCommand(jda);
 	}
 
-	private static void createJDA(DiscordBotTokenComponent discordBotTokenComponent, DiscordListener discordListener) {
-
-		JDA jda = JDABuilder.createDefault(discordBotTokenComponent.getToken())
-				.setActivity(Activity.playing("메시지 대기"))
-				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
-				.addEventListeners(discordListener)
-				.build();
+	private static void addSlashCommand(JDA jda) {
 
 		CommandListUpdateAction commands = jda.updateCommands();
 
@@ -61,8 +57,21 @@ public class DiscordchatbotApplication {
 						.addOption(STRING, "quote", "quote", true)
 		);
 
+		commands.addCommands(
+				Commands.slash("db-loop", "단위 시간 마다 명언 출력")
+						.addOption(INTEGER, "time", "time 단위 : s", true)
+		);
 
 		commands.queue();
+	}
+
+	private static JDA createJDA(DiscordBotTokenComponent discordBotTokenComponent, DiscordListener discordListener) {
+
+		return JDABuilder.createDefault(discordBotTokenComponent.getToken())
+				.setActivity(Activity.playing("메시지 대기"))
+				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
+				.addEventListeners(discordListener)
+				.build();
 	}
 
 }
