@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -41,14 +43,25 @@ public class DiscordListener extends ListenerAdapter {
                 int num = event.getOption("num").getAsInt();
                 dbCount(event, num);
                 break;
-            case "db-add":
-                String author = event.getOption("author").getAsString();
-                String quote = event.getOption("quote").getAsString();
-                dbAdd(event, author, quote);
-                break;
             case "db-loop":
                 int time = event.getOption("time").getAsInt();
                 dbLoop(event, time);
+                break;
+            case "db-all":
+                dbAll(event);
+                break;
+            case "db-add":
+                String addedAuthor = event.getOption("author").getAsString();
+                String addedQuote = event.getOption("quote").getAsString();
+                dbAdd(event, addedAuthor, addedQuote);
+                break;
+            case "db-update":
+                int updatedId = event.getOption("id").getAsInt();
+                String updatedAuthor = event.getOption("author").getAsString();
+                String updatedQuote = event.getOption("quote").getAsString();
+                break;
+            case "db-delete":
+                int deletedId = event.getOption("id").getAsInt();
                 break;
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
@@ -101,17 +114,6 @@ public class DiscordListener extends ListenerAdapter {
         event.reply(toMessage(quoteDto)).queue();
     }
 
-    private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
-
-        boolean result = quotesService.addQuote(author, quote);
-
-        if (result) {
-            event.reply("성공적으로 추가되었습니다.").queue();
-            return;
-        }
-        event.reply("실패했습니다.").queue();
-    }
-
     private void dbLoop(SlashCommandInteractionEvent event, int time) {
 
         event.reply("지금부터 " + time + "초마다 명언을 출력해요!").queue();
@@ -122,6 +124,29 @@ public class DiscordListener extends ListenerAdapter {
                 event.getChannel().sendMessage(toMessage(quotesService.getDBRandomQuote())).queue();
             }
         }, 3000L, time * 1000L);
+    }
+
+    private void dbAll(SlashCommandInteractionEvent event) {
+
+        List<QuoteDto> quoteDtos = quotesService.findAll();
+
+        AtomicInteger counter = new AtomicInteger();
+        String result = quoteDtos.stream()
+                .map(dto -> counter.getAndIncrement() + ". " + toMessage(dto))
+                .collect(Collectors.joining("\n"));
+
+        event.reply(result).queue();
+    }
+
+    private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
+
+        boolean result = quotesService.addQuote(author, quote);
+
+        if (result) {
+            event.reply("성공적으로 추가되었습니다.").queue();
+            return;
+        }
+        event.reply("실패했습니다.").queue();
     }
 
     private static @NotNull String toMessage(QuoteDto quoteDto) {
