@@ -1,8 +1,8 @@
 # discordchatbot
 
 ### 기능
-- 명령어 사용
-- 일정 시간마다 자동으로 명언 출력 with Quotes API
+- 명령어 사용을 통한 명언 출력 및 관리
+- 일정 시간마다 자동으로 명언 출력
 
 ### 명령어
 - `/help`
@@ -16,3 +16,6 @@
   - DB에서 num 개수만큼 명언 출력
 - `/db-add {author} {quote}`
   - DB에 명언 추가
+- `/db-loop {time}`
+  - time 단위 : s
+  - 단위 시간 마다 명언 출력

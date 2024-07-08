@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Slf4j
 @Component
@@ -43,6 +46,10 @@ public class DiscordListener extends ListenerAdapter {
                 String quote = event.getOption("quote").getAsString();
                 dbAdd(event, author, quote);
                 break;
+            case "db-loop":
+                int time = event.getOption("time").getAsInt();
+                dbLoop(event, time);
+                break;
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
         }
@@ -69,7 +76,7 @@ public class DiscordListener extends ListenerAdapter {
 
         QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
 
-        event.reply("\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor()).queue();
+        event.reply(toMessage(quoteDto)).queue();
     }
 
     private void dbCount(SlashCommandInteractionEvent event, int num) {
@@ -91,7 +98,7 @@ public class DiscordListener extends ListenerAdapter {
 
         QuoteDto quoteDto = quotesService.getDBRandomQuote();
 
-        event.reply("\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor()).queue();
+        event.reply(toMessage(quoteDto)).queue();
     }
 
     private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
@@ -105,4 +112,19 @@ public class DiscordListener extends ListenerAdapter {
         event.reply("실패했습니다.").queue();
     }
 
+    private void dbLoop(SlashCommandInteractionEvent event, int time) {
+
+        event.reply("지금부터 " + time + "초마다 명언을 출력해요!").queue();
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                event.getChannel().sendMessage(toMessage(quotesService.getDBRandomQuote())).queue();
+            }
+        }, 3000L, time * 1000L);
+    }
+
+    private static @NotNull String toMessage(QuoteDto quoteDto) {
+        return "\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor();
+    }
 }
