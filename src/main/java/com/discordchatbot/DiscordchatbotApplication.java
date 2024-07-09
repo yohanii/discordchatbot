@@ -52,14 +52,30 @@ public class DiscordchatbotApplication {
 		);
 
 		commands.addCommands(
-				Commands.slash("db-add", "Quotes API로 num 개수만큼 명언 출력")
-						.addOption(STRING, "author", "author", true)
-						.addOption(STRING, "quote", "quote", true)
+				Commands.slash("db-loop", "단위 시간 마다 명언 출력")
+						.addOption(INTEGER, "time", "time 단위 : s", true)
 		);
 
 		commands.addCommands(
-				Commands.slash("db-loop", "단위 시간 마다 명언 출력")
-						.addOption(INTEGER, "time", "time 단위 : s", true)
+				Commands.slash("db-all", "DB 모든 명언 조회")
+		);
+
+		commands.addCommands(
+				Commands.slash("db-add", "DB에 명언 추가")
+						.addOption(STRING, "author", "저자", true)
+						.addOption(STRING, "quote", "명언", true)
+		);
+
+		commands.addCommands(
+				Commands.slash("db-update", "DB 명언 수정")
+						.addOption(INTEGER, "id", "id", true)
+						.addOption(STRING, "author", "저자", true)
+						.addOption(STRING, "quote", "명언", true)
+		);
+
+		commands.addCommands(
+				Commands.slash("db-delete", "DB 명언 삭제")
+						.addOption(INTEGER, "id", "id", true)
 		);
 
 		commands.queue();

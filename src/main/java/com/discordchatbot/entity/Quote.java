@@ -26,4 +26,9 @@ public class Quote {
         this.author = author;
         this.quote = quote;
     }
+
+    public void updateQuote(String author, String quote) {
+        this.author = author;
+        this.quote = quote;
+    }
 }

@@ -1,6 +1,7 @@
 package com.discordchatbot;
 
 import com.discordchatbot.dto.QuoteDto;
+import com.discordchatbot.entity.Quote;
 import com.discordchatbot.service.QuotesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -41,14 +44,27 @@ public class DiscordListener extends ListenerAdapter {
                 int num = event.getOption("num").getAsInt();
                 dbCount(event, num);
                 break;
-            case "db-add":
-                String author = event.getOption("author").getAsString();
-                String quote = event.getOption("quote").getAsString();
-                dbAdd(event, author, quote);
-                break;
             case "db-loop":
                 int time = event.getOption("time").getAsInt();
                 dbLoop(event, time);
+                break;
+            case "db-all":
+                dbAll(event);
+                break;
+            case "db-add":
+                String addedAuthor = event.getOption("author").getAsString();
+                String addedQuote = event.getOption("quote").getAsString();
+                dbAdd(event, addedAuthor, addedQuote);
+                break;
+            case "db-update":
+                int updatedId = event.getOption("id").getAsInt();
+                String updatedAuthor = event.getOption("author").getAsString();
+                String updatedQuote = event.getOption("quote").getAsString();
+                dbUpdate(event, updatedId, updatedAuthor, updatedQuote);
+                break;
+            case "db-delete":
+                int deletedId = event.getOption("id").getAsInt();
+                dbDelete(event, deletedId);
                 break;
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
@@ -101,17 +117,6 @@ public class DiscordListener extends ListenerAdapter {
         event.reply(toMessage(quoteDto)).queue();
     }
 
-    private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
-
-        boolean result = quotesService.addQuote(author, quote);
-
-        if (result) {
-            event.reply("성공적으로 추가되었습니다.").queue();
-            return;
-        }
-        event.reply("실패했습니다.").queue();
-    }
-
     private void dbLoop(SlashCommandInteractionEvent event, int time) {
 
         event.reply("지금부터 " + time + "초마다 명언을 출력해요!").queue();
@@ -124,7 +129,53 @@ public class DiscordListener extends ListenerAdapter {
         }, 3000L, time * 1000L);
     }
 
+    private void dbAll(SlashCommandInteractionEvent event) {
+
+        List<Quote> quotes = quotesService.findAll();
+
+        String result = quotes.stream()
+                .map(DiscordListener::toMessage)
+                .collect(Collectors.joining("\n"));
+
+        event.reply(result).queue();
+    }
+
+    private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
+
+        boolean result = quotesService.addQuote(author, quote);
+
+        if (result) {
+            event.reply("성공적으로 추가되었습니다.").queue();
+            return;
+        }
+        event.reply("실패했습니다.").queue();
+    }
+
+    private void dbUpdate(SlashCommandInteractionEvent event, int id, String author, String quote) {
+
+        try {
+            quotesService.updateQuote(id, author, quote);
+            event.reply("성공적으로 수정되었습니다.").queue();
+        } catch (NoSuchElementException e) {
+            event.reply(e.getMessage()).queue();
+        }
+    }
+
+    private void dbDelete(SlashCommandInteractionEvent event, int id) {
+
+        try {
+            quotesService.deleteQuote(id);
+            event.reply("성공적으로 삭제되었습니다.").queue();
+        } catch (NoSuchElementException e) {
+            event.reply(e.getMessage()).queue();
+        }
+    }
+
     private static @NotNull String toMessage(QuoteDto quoteDto) {
         return "\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor();
+    }
+
+    private static @NotNull String toMessage(Quote q) {
+        return "id" + q.getId() + ". \"" + q.getQuote() + "\" -" + q.getAuthor();
     }
 }

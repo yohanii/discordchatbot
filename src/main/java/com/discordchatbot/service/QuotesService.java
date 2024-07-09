@@ -7,6 +7,7 @@ import com.discordchatbot.feign.response.QuoteResponse;
 import com.discordchatbot.feign.response.QuotesApiResponse;
 import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,18 +41,6 @@ public class QuotesService {
         return result;
     }
 
-    public boolean addQuote(String author, String quote) {
-
-        Quote quoteToAdd = Quote.builder()
-                .author(author)
-                .quote(quote)
-                .build();
-
-        Quote saved = quotesRepository.save(quoteToAdd);
-
-        return saved.getId() != null;
-    }
-
     public QuoteDto getDBRandomQuote() {
 
         long count = quotesRepository.count();
@@ -79,5 +68,36 @@ public class QuotesService {
         }
 
         return null;
+    }
+
+    public List<Quote> findAll() {
+        return quotesRepository.findAll();
+    }
+
+    @Transactional
+    public boolean addQuote(String author, String quote) {
+
+        Quote quoteToAdd = Quote.builder()
+                .author(author)
+                .quote(quote)
+                .build();
+
+        Quote saved = quotesRepository.save(quoteToAdd);
+
+        return saved.getId() != null;
+    }
+
+    @Transactional
+    public void updateQuote(int id, String author, String quote) {
+
+        Quote findQuote = quotesRepository.findById((long) id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
+
+        findQuote.updateQuote(author, quote);
+    }
+
+    @Transactional
+    public void deleteQuote(int id) {
+        quotesRepository.deleteById((long) id);
     }
 }
