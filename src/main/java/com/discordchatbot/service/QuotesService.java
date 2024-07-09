@@ -81,10 +81,7 @@ public class QuotesService {
         return null;
     }
 
-    public List<QuoteDto> findAll() {
-        return quotesRepository.findAll()
-                .stream()
-                .map(q -> new QuoteDto(q.getAuthor(), q.getQuote()))
-                .toList();
+    public List<Quote> findAll() {
+        return quotesRepository.findAll();
     }
 }

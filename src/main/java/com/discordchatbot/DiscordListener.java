@@ -1,6 +1,7 @@
 package com.discordchatbot;
 
 import com.discordchatbot.dto.QuoteDto;
+import com.discordchatbot.entity.Quote;
 import com.discordchatbot.service.QuotesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -128,11 +128,10 @@ public class DiscordListener extends ListenerAdapter {
 
     private void dbAll(SlashCommandInteractionEvent event) {
 
-        List<QuoteDto> quoteDtos = quotesService.findAll();
+        List<Quote> quotes = quotesService.findAll();
 
-        AtomicInteger counter = new AtomicInteger();
-        String result = quoteDtos.stream()
-                .map(dto -> counter.getAndIncrement() + ". " + toMessage(dto))
+        String result = quotes.stream()
+                .map(DiscordListener::toMessage)
                 .collect(Collectors.joining("\n"));
 
         event.reply(result).queue();
@@ -151,5 +150,9 @@ public class DiscordListener extends ListenerAdapter {
 
     private static @NotNull String toMessage(QuoteDto quoteDto) {
         return "\"" + quoteDto.getQuote() + "\" -" + quoteDto.getAuthor();
+    }
+
+    private static @NotNull String toMessage(Quote q) {
+        return q.getId() + ". \"" + q.getQuote() + "\" -" + q.getAuthor();
     }
 }
