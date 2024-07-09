@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -59,6 +60,7 @@ public class DiscordListener extends ListenerAdapter {
                 int updatedId = event.getOption("id").getAsInt();
                 String updatedAuthor = event.getOption("author").getAsString();
                 String updatedQuote = event.getOption("quote").getAsString();
+                dbUpdate(event, updatedId, updatedAuthor, updatedQuote);
                 break;
             case "db-delete":
                 int deletedId = event.getOption("id").getAsInt();
@@ -146,6 +148,17 @@ public class DiscordListener extends ListenerAdapter {
             return;
         }
         event.reply("실패했습니다.").queue();
+    }
+
+    private void dbUpdate(SlashCommandInteractionEvent event, int id, String author, String quote) {
+
+        try {
+            quotesService.updateQuote(id, author, quote);
+
+            event.reply("성공적으로 수정되었습니다.").queue();
+        } catch (NoSuchElementException e) {
+            event.reply(e.getMessage()).queue();
+        }
     }
 
     private static @NotNull String toMessage(QuoteDto quoteDto) {
