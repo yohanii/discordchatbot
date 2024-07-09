@@ -64,6 +64,7 @@ public class DiscordListener extends ListenerAdapter {
                 break;
             case "db-delete":
                 int deletedId = event.getOption("id").getAsInt();
+                dbDelete(event, deletedId);
                 break;
             default:
                 event.reply("이해할 수 없는 명령어 입니다.").queue();
@@ -154,8 +155,17 @@ public class DiscordListener extends ListenerAdapter {
 
         try {
             quotesService.updateQuote(id, author, quote);
-
             event.reply("성공적으로 수정되었습니다.").queue();
+        } catch (NoSuchElementException e) {
+            event.reply(e.getMessage()).queue();
+        }
+    }
+
+    private void dbDelete(SlashCommandInteractionEvent event, int id) {
+
+        try {
+            quotesService.deleteQuote(id);
+            event.reply("성공적으로 삭제되었습니다.").queue();
         } catch (NoSuchElementException e) {
             event.reply(e.getMessage()).queue();
         }
@@ -166,6 +176,6 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     private static @NotNull String toMessage(Quote q) {
-        return q.getId() + ". \"" + q.getQuote() + "\" -" + q.getAuthor();
+        return "id" + q.getId() + ". \"" + q.getQuote() + "\" -" + q.getAuthor();
     }
 }

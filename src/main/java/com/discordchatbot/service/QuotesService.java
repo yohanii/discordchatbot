@@ -95,4 +95,9 @@ public class QuotesService {
 
         findQuote.updateQuote(author, quote);
     }
+
+    @Transactional
+    public void deleteQuote(int id) {
+        quotesRepository.deleteById((long) id);
+    }
 }
