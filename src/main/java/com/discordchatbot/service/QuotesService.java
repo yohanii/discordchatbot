@@ -7,13 +7,17 @@ import com.discordchatbot.feign.response.QuoteResponse;
 import com.discordchatbot.feign.response.QuotesApiResponse;
 import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
+import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -55,19 +59,25 @@ public class QuotesService {
         return new Random().nextLong(max) + 1;
     }
 
-    public QuoteDto getAPIQuoteOfTheDay() {
+    public QuoteDto getAPIQuoteOfTheDay() throws NoSuchElementException, IllegalStateException, FeignException {
 
-        QuotesApiResponse<QuotesResponse> response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
-        List<QuoteResponse> quotes = response.getContents().getQuotes();
-
-        if (quotes.size() == 1) {
-
-            QuoteResponse quote = quotes.getFirst();
-
-            return new QuoteDto(quote.getAuthor(), quote.getQuote());
+        if (QUOTES_API_KEY.isBlank()) {
+            throw new NoSuchElementException("QUOTES_API_KEY가 존재하지 않습니다.");
         }
 
-        return null;
+        QuotesApiResponse<QuotesResponse> response = null;
+
+        response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
+
+        List<QuoteResponse> quotes = response.getContents().getQuotes();
+
+        if (quotes.size() != 1) {
+            throw new IllegalStateException("잘못된 API 응답입니다.");
+        }
+
+        QuoteResponse quote = quotes.getFirst();
+        return new QuoteDto(quote.getAuthor(), quote.getQuote());
+
     }
 
     public List<Quote> findAll() {

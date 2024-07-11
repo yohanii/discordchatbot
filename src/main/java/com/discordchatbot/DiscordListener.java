@@ -3,6 +3,7 @@ package com.discordchatbot;
 import com.discordchatbot.dto.QuoteDto;
 import com.discordchatbot.entity.Quote;
 import com.discordchatbot.service.QuotesService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -90,9 +91,20 @@ public class DiscordListener extends ListenerAdapter {
 
     private void apiToday(SlashCommandInteractionEvent event) {
 
-        QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
-
-        event.reply(toMessage(quoteDto)).queue();
+        try {
+            QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
+            event.reply(toMessage(quoteDto)).queue();
+        } catch (FeignException e) {
+            log.error(e.getMessage());
+            if (e.status() == 429) {
+                event.reply("오늘 볼 수 있는 한계를 넘었습니다! 다른 명령어를 사용해주세요!!").queue();
+                return;
+            }
+            event.reply("문제가 발생했습니다. 다시 시도하거나 다른 명령어를 사용해주세요!").queue();
+        } catch (NoSuchElementException | IllegalStateException e) {
+            log.error(e.getMessage());
+            event.reply("문제가 발생했습니다. 다시 시도하거나 다른 명령어를 사용해주세요!").queue();
+        }
     }
 
     private void dbCount(SlashCommandInteractionEvent event, int num) {
