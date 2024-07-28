@@ -45,10 +45,12 @@ public class QuotesService {
 
         long count = quotesRepository.count();
 
-        Quote quote = quotesRepository.findById(getRandomNumber(count))
-                .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 없습니다."));
+        Optional<Quote> quote = Optional.empty();
+        while (quote.isEmpty()) {
+            quote = quotesRepository.findById(getRandomNumber(count));
+        }
 
-        return new QuoteDto(quote.getAuthor(), quote.getQuote());
+        return new QuoteDto(quote.get().getAuthor(), quote.get().getQuote());
     }
 
     private long getRandomNumber(long max) {
