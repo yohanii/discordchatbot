@@ -3,6 +3,7 @@ package com.discordchatbot;
 import com.discordchatbot.dto.QuoteDto;
 import com.discordchatbot.entity.Quote;
 import com.discordchatbot.service.QuotesService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -83,16 +84,36 @@ public class DiscordListener extends ListenerAdapter {
                         "- `/db-count {num}` \n" +
                         "  - 0 < num < 10\n" +
                         "  - DB에서 num 개수만큼 명언 출력\n" +
+                        "- `/db-loop {time}`\n" +
+                        "  - time 단위 : s\n" +
+                        "  - 단위 시간 마다 명언 출력\n" +
+                        "- `/db-all`\n" +
+                        "  - DB 모든 명언 조회\n" +
                         "- `/db-add {author} {quote}`\n" +
-                        "  - DB에 명언 추가"
+                        "  - DB에 명언 추가\n" +
+                        "- `/db-update {id} {author} {quote}`\n" +
+                        "  - DB 명언 수정\n" +
+                        "- `/db-delete {id}`\n" +
+                        "  - DB 명언 삭제"
         ).queue();
     }
 
     private void apiToday(SlashCommandInteractionEvent event) {
 
-        QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
-
-        event.reply(toMessage(quoteDto)).queue();
+        try {
+            QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
+            event.reply(toMessage(quoteDto)).queue();
+        } catch (FeignException e) {
+            log.error(e.getMessage());
+            if (e.status() == 429) {
+                event.reply("오늘 볼 수 있는 한계를 넘었습니다! 다른 명령어를 사용해주세요!!").queue();
+                return;
+            }
+            event.reply("문제가 발생했습니다. 다시 시도하거나 다른 명령어를 사용해주세요!").queue();
+        } catch (NoSuchElementException | IllegalStateException e) {
+            log.error(e.getMessage());
+            event.reply("문제가 발생했습니다. 다시 시도하거나 다른 명령어를 사용해주세요!").queue();
+        }
     }
 
     private void dbCount(SlashCommandInteractionEvent event, int num) {
@@ -157,7 +178,7 @@ public class DiscordListener extends ListenerAdapter {
             quotesService.updateQuote(id, author, quote);
             event.reply("성공적으로 수정되었습니다.").queue();
         } catch (NoSuchElementException e) {
-            event.reply(e.getMessage()).queue();
+            event.reply("입력한 id에 해당하는 명언이 존재하지 않습니다! id를 확인해주세요~").queue();
         }
     }
 
@@ -167,7 +188,7 @@ public class DiscordListener extends ListenerAdapter {
             quotesService.deleteQuote(id);
             event.reply("성공적으로 삭제되었습니다.").queue();
         } catch (NoSuchElementException e) {
-            event.reply(e.getMessage()).queue();
+            event.reply("입력한 id에 해당하는 명언이 존재하지 않습니다! id를 확인해주세요~").queue();
         }
     }
 

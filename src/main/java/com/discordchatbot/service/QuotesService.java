@@ -7,6 +7,7 @@ import com.discordchatbot.feign.response.QuoteResponse;
 import com.discordchatbot.feign.response.QuotesApiResponse;
 import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
+import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +33,9 @@ public class QuotesService {
 
         long quotesCount = quotesRepository.count();
 
-        for (int i = 0; i < count; i++) {
-            Quote quote = quotesRepository.findById(getRandomNumber(quotesCount))
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
-            result.add(new QuoteDto(quote.getAuthor(), quote.getQuote()));
+        while (result.size() < count) {
+            quotesRepository.findById(getRandomNumber(quotesCount))
+                    .ifPresent(value -> result.add(new QuoteDto(value.getAuthor(), value.getQuote())));
         }
 
         return result;
@@ -45,29 +45,37 @@ public class QuotesService {
 
         long count = quotesRepository.count();
 
-        Quote quote = quotesRepository.findById(getRandomNumber(count))
-                .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 없습니다."));
+        Optional<Quote> quote = Optional.empty();
+        while (quote.isEmpty()) {
+            quote = quotesRepository.findById(getRandomNumber(count));
+        }
 
-        return new QuoteDto(quote.getAuthor(), quote.getQuote());
+        return new QuoteDto(quote.get().getAuthor(), quote.get().getQuote());
     }
 
     private long getRandomNumber(long max) {
         return new Random().nextLong(max) + 1;
     }
 
-    public QuoteDto getAPIQuoteOfTheDay() {
+    public QuoteDto getAPIQuoteOfTheDay() throws NoSuchElementException, IllegalStateException, FeignException {
 
-        QuotesApiResponse<QuotesResponse> response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
-        List<QuoteResponse> quotes = response.getContents().getQuotes();
-
-        if (quotes.size() == 1) {
-
-            QuoteResponse quote = quotes.getFirst();
-
-            return new QuoteDto(quote.getAuthor(), quote.getQuote());
+        if (QUOTES_API_KEY.isBlank()) {
+            throw new NoSuchElementException("QUOTES_API_KEY가 존재하지 않습니다.");
         }
 
-        return null;
+        QuotesApiResponse<QuotesResponse> response = null;
+
+        response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
+
+        List<QuoteResponse> quotes = response.getContents().getQuotes();
+
+        if (quotes.size() != 1) {
+            throw new IllegalStateException("잘못된 API 응답입니다.");
+        }
+
+        QuoteResponse quote = quotes.getFirst();
+        return new QuoteDto(quote.getAuthor(), quote.getQuote());
+
     }
 
     public List<Quote> findAll() {
