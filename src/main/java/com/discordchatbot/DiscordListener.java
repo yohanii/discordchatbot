@@ -84,8 +84,17 @@ public class DiscordListener extends ListenerAdapter {
                         "- `/db-count {num}` \n" +
                         "  - 0 < num < 10\n" +
                         "  - DB에서 num 개수만큼 명언 출력\n" +
+                        "- `/db-loop {time}`\n" +
+                        "  - time 단위 : s\n" +
+                        "  - 단위 시간 마다 명언 출력\n" +
+                        "- `/db-all`\n" +
+                        "  - DB 모든 명언 조회\n" +
                         "- `/db-add {author} {quote}`\n" +
-                        "  - DB에 명언 추가"
+                        "  - DB에 명언 추가\n" +
+                        "- `/db-update {id} {author} {quote}`\n" +
+                        "  - DB 명언 수정\n" +
+                        "- `/db-delete {id}`\n" +
+                        "  - DB 명언 삭제"
         ).queue();
     }
 

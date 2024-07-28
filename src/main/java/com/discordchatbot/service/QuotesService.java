@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,10 +33,9 @@ public class QuotesService {
 
         long quotesCount = quotesRepository.count();
 
-        for (int i = 0; i < count; i++) {
-            Quote quote = quotesRepository.findById(getRandomNumber(quotesCount))
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 명언이 존재하지 않습니다."));
-            result.add(new QuoteDto(quote.getAuthor(), quote.getQuote()));
+        while (result.size() < count) {
+            quotesRepository.findById(getRandomNumber(quotesCount))
+                    .ifPresent(value -> result.add(new QuoteDto(value.getAuthor(), value.getQuote())));
         }
 
         return result;
