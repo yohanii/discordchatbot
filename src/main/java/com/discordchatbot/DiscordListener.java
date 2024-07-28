@@ -178,7 +178,7 @@ public class DiscordListener extends ListenerAdapter {
             quotesService.updateQuote(id, author, quote);
             event.reply("성공적으로 수정되었습니다.").queue();
         } catch (NoSuchElementException e) {
-            event.reply(e.getMessage()).queue();
+            event.reply("입력한 id에 해당하는 명언이 존재하지 않습니다! id를 확인해주세요~").queue();
         }
     }
 
@@ -188,7 +188,7 @@ public class DiscordListener extends ListenerAdapter {
             quotesService.deleteQuote(id);
             event.reply("성공적으로 삭제되었습니다.").queue();
         } catch (NoSuchElementException e) {
-            event.reply(e.getMessage()).queue();
+            event.reply("입력한 id에 해당하는 명언이 존재하지 않습니다! id를 확인해주세요~").queue();
         }
     }
 
