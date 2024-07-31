@@ -3,33 +3,35 @@ package com.discordchatbot.service;
 import com.discordchatbot.dto.QuoteDto;
 import com.discordchatbot.entity.Quote;
 import com.discordchatbot.feign.QuotesFeignClient;
+import com.discordchatbot.feign.response.QuoteResponse;
+import com.discordchatbot.feign.response.QuotesApiResponse;
+import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
-import org.assertj.core.api.Assertions;
+import feign.FeignException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class QuotesServiceTest {
 
-    @InjectMocks
     QuotesService quotesService;
 
     @Mock
@@ -37,6 +39,14 @@ class QuotesServiceTest {
 
     @Mock
     QuotesFeignClient quotesFeignClient;
+
+    private static final String VALID_QUOTES_API_KEY = "valid_api_key";
+    private static final String INVALID_QUOTES_API_KEY = "";
+
+    @BeforeEach
+    void setUp() {
+        quotesService = new QuotesService(quotesRepository, quotesFeignClient, VALID_QUOTES_API_KEY);
+    }
 
     @Test
     @DisplayName("명언 리스트의 길이는 count와 같다")
@@ -85,8 +95,65 @@ class QuotesServiceTest {
     }
 
     @Test
-    @DisplayName("")
-    void getAPIQuoteOfTheDay() {
+    @DisplayName("getQuoteOfTheDay에서 FeignException 날 경우, 그대로 던진다.")
+    void getAPIQuoteOfTheDay_FeignException() {
+
+        //Given
+        given(quotesFeignClient.getQuoteOfTheDay(anyString())).willThrow(FeignException.class);
+
+        //When
+        //Then
+        assertThatThrownBy(() -> quotesService.getAPIQuoteOfTheDay())
+                .isInstanceOf(FeignException.class);
+    }
+
+    @Test
+    @DisplayName("API key가 blank이면, NoSuchElementException을 던진다.")
+    void getAPIQuoteOfTheDay_INVALID_QUOTES_API_KEY() {
+
+        //Given
+        quotesService = new QuotesService(quotesRepository, quotesFeignClient, INVALID_QUOTES_API_KEY);
+
+        //When
+        //Then
+        assertThatThrownBy(() -> quotesService.getAPIQuoteOfTheDay())
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("response의 quotes 개수가 1이 아니면, IllegalStateException을 던진다.")
+    void getAPIQuoteOfTheDay_quotes_count_not_one() {
+
+        //Given
+        QuoteResponse quote1 = new QuoteResponse("author1", "quote1");
+        QuoteResponse quote2 = new QuoteResponse("author2", "quote2");
+        QuotesApiResponse<QuotesResponse> apiResponse = new QuotesApiResponse<>(null, new QuotesResponse(List.of(quote1, quote2)));
+
+        given(quotesFeignClient.getQuoteOfTheDay(VALID_QUOTES_API_KEY)).willReturn(apiResponse);
+
+        //When
+        //Then
+        assertThatThrownBy(() -> quotesService.getAPIQuoteOfTheDay())
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("api의 응답을 QuoteDto로 반환한다.")
+    void getAPIQuoteOfTheDa() {
+
+        //Given
+        QuoteResponse quote = new QuoteResponse("quote1", "author1");
+        QuotesApiResponse<QuotesResponse> apiResponse = new QuotesApiResponse<>(null, new QuotesResponse(List.of(quote)));
+
+        given(quotesFeignClient.getQuoteOfTheDay(VALID_QUOTES_API_KEY)).willReturn(apiResponse);
+
+        //When
+        QuoteDto result = quotesService.getAPIQuoteOfTheDay();
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result.getAuthor()).isEqualTo("author1");
+        assertThat(result.getQuote()).isEqualTo("quote1");
     }
 
     @Test

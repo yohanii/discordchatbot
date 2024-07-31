@@ -9,7 +9,6 @@ import com.discordchatbot.feign.response.QuotesResponse;
 import com.discordchatbot.repository.QuotesRepository;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,14 +17,18 @@ import java.util.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class QuotesService {
 
     private final QuotesRepository quotesRepository;
     private final QuotesFeignClient quotesFeignClient;
+    private final String QUOTES_API_KEY;
 
-    @Value("${quotes.api-key}")
-    private String QUOTES_API_KEY;
+
+    public QuotesService(QuotesRepository quotesRepository, QuotesFeignClient quotesFeignClient, @Value("${quotes.api-key}") String apiKey) {
+        this.quotesRepository = quotesRepository;
+        this.quotesFeignClient = quotesFeignClient;
+        this.QUOTES_API_KEY = apiKey;
+    }
 
     public List<QuoteDto> getDBRandomQuotes(int count) {
 
@@ -63,9 +66,7 @@ public class QuotesService {
             throw new NoSuchElementException("QUOTES_API_KEY가 존재하지 않습니다.");
         }
 
-        QuotesApiResponse<QuotesResponse> response = null;
-
-        response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
+        QuotesApiResponse<QuotesResponse> response = quotesFeignClient.getQuoteOfTheDay(QUOTES_API_KEY);
 
         List<QuoteResponse> quotes = response.getContents().getQuotes();
 
