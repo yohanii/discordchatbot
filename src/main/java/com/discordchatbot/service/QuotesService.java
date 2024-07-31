@@ -10,6 +10,7 @@ import com.discordchatbot.repository.QuotesRepository;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class QuotesService {
     private final QuotesFeignClient quotesFeignClient;
     private final String QUOTES_API_KEY;
 
-
+    @Autowired
     public QuotesService(QuotesRepository quotesRepository, QuotesFeignClient quotesFeignClient, @Value("${quotes.api-key}") String apiKey) {
         this.quotesRepository = quotesRepository;
         this.quotesFeignClient = quotesFeignClient;
