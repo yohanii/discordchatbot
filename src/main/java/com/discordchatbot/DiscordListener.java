@@ -104,7 +104,7 @@ public class DiscordListener extends ListenerAdapter {
             QuoteDto quoteDto = quotesService.getAPIQuoteOfTheDay();
             event.reply(toMessage(quoteDto)).queue();
         } catch (FeignException e) {
-            log.error(e.getCause() + e.getMessage());
+            log.error("FeignException", e);
             if (e.status() == 429) {
                 event.reply("오늘 볼 수 있는 한계를 넘었습니다! 다른 명령어를 사용해주세요!!").queue();
                 return;
