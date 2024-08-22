@@ -30,4 +30,5 @@ discord:
     token: ${DISCORD_BOT_TOKEN}
 
 quotes:
-  api-key: tNNXSoBZwgz3A9C94bl1Aej6MPVUTzgAPXq5mcJK
+#  api-key: xVjJozFLj4NJrLJ7AmUlnhZMXSxouIKrKabu3uGa
+  api-key: 7jXlg6Zmr9mKSwVRfGBc3ycTtkQY2ehOclLjeu5y
