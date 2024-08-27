@@ -35,13 +35,9 @@ public class QuotesService {
 
         List<QuoteDto> result = new ArrayList<>();
 
-        long quotesCount = quotesRepository.count();
-
         while (result.size() < count) {
-            quotesRepository.findById(getRandomNumber(quotesCount))
-                    .ifPresent(value -> result.add(new QuoteDto(value.getAuthor(), value.getQuote())));
+            result.add(getDBRandomQuote());
         }
-
         return result;
     }
 
