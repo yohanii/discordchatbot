@@ -43,18 +43,13 @@ public class QuotesService {
 
     public QuoteDto getDBRandomQuote() {
 
-        long count = quotesRepository.count();
+        Quote quote = quotesRepository.findRandom();
 
-        Optional<Quote> quote = Optional.empty();
-        while (quote.isEmpty()) {
-            quote = quotesRepository.findById(getRandomNumber(count));
+        if (quote == null) {
+            throw new NoSuchElementException("Quote not found");
         }
 
-        return new QuoteDto(quote.get().getAuthor(), quote.get().getQuote());
-    }
-
-    private long getRandomNumber(long max) {
-        return new Random().nextLong(max) + 1;
+        return new QuoteDto(quote.getAuthor(), quote.getQuote());
     }
 
     public QuoteDto getAPIQuoteOfTheDay() throws NoSuchElementException, IllegalStateException, FeignException {
