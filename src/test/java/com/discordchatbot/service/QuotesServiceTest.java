@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,11 +58,10 @@ class QuotesServiceTest {
                 .quote("quote")
                 .build();
 
-        given(quotesRepository.count()).willReturn(10L);
-        given(quotesRepository.findById(anyLong())).willReturn(Optional.of(quote));
+        given(quotesRepository.findRandom()).willReturn(quote);
 
         //When
-        List<QuoteDto> result = quotesService.getDBRandomQuotes(5);
+        List<QuoteDto> result = quotesService.getDBRandomQuotes(count);
 
         //Then
         assertThat(result).hasSize(count);
@@ -79,16 +77,12 @@ class QuotesServiceTest {
                 .quote("Test Quote")
                 .build();
 
-        given(quotesRepository.count()).willReturn(quoteCount);
-        given(quotesRepository.findById(anyLong())).willReturn(Optional.of(randomQuote));
+        given(quotesRepository.findRandom()).willReturn(randomQuote);
 
         // When
         QuoteDto quoteDto = quotesService.getDBRandomQuote();
 
         // Then
-        then(quotesRepository).should(times(1)).count();
-        then(quotesRepository).should(atLeastOnce()).findById(anyLong());
-
         assertThat(quoteDto).isNotNull();
         assertThat(quoteDto.getAuthor()).isEqualTo("Test Author");
         assertThat(quoteDto.getQuote()).isEqualTo("Test Quote");

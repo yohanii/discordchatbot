@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  web:
+    image: yohanii/dicobot:latest
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - export_network
+  db:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=chatbotdb
+    ports:
+      - "3306:3306"
+    networks:
+      - export_network
+
+networks:
+  export_network:
+    driver: bridge
