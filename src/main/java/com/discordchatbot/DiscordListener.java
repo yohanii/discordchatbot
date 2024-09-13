@@ -163,7 +163,8 @@ public class DiscordListener extends ListenerAdapter {
                 .map(DiscordListener::toMessage)
                 .forEach(s -> sb.append(s).append("\n"));
 
-        event.reply(sb.toString()).queue();
+        event.reply("총 " + quotes.size() + "개의 명언이 존재합니다.").queue();
+        event.getChannel().sendMessage(sb.toString()).queue();
     }
 
     private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
