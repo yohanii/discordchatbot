@@ -16,7 +16,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: mysql:latest
+    image: mysql:8.0
     restart: always
     volumes:
       - ./mysqldata:/var/lib/mysql
