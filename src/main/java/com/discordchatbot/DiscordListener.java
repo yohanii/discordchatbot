@@ -24,51 +24,56 @@ public class DiscordListener extends ListenerAdapter {
 
     private final QuotesService quotesService;
 
+    private static final String COMMAND_CHANNEL_NAME = "명언채널";
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         log.info("onSlashCommandInteraction : " + event.getName());
+        log.info("event.getChannel().getName() : " + event.getChannel().getName());
 
-        switch (event.getName()) {
-            case "help":
-                help(event);
-                break;
-            case "api-today":
-                apiToday(event);
-                break;
-            case "api-count":
-                event.reply("hi api-count").queue();
-                break;
-            case "db-random":
-                dbRandom(event);
-                break;
-            case "db-count":
-                int num = event.getOption("num").getAsInt();
-                dbCount(event, num);
-                break;
-            case "db-loop":
-                int time = event.getOption("time").getAsInt();
-                dbLoop(event, time);
-                break;
-            case "db-all":
-                dbAll(event);
-                break;
-            case "db-add":
-                String addedAuthor = event.getOption("author").getAsString();
-                String addedQuote = event.getOption("quote").getAsString();
-                dbAdd(event, addedAuthor, addedQuote);
-                break;
-            case "db-update":
-                int updatedId = event.getOption("id").getAsInt();
-                String updatedAuthor = event.getOption("author").getAsString();
-                String updatedQuote = event.getOption("quote").getAsString();
-                dbUpdate(event, updatedId, updatedAuthor, updatedQuote);
-                break;
-            case "db-delete":
-                int deletedId = event.getOption("id").getAsInt();
-                dbDelete(event, deletedId);
-                break;
-            default:
-                event.reply("이해할 수 없는 명령어 입니다.").queue();
+        if (event.getChannel().getName().equals(COMMAND_CHANNEL_NAME)) {
+            switch (event.getName()) {
+                case "help":
+                    help(event);
+                    break;
+                case "api-today":
+                    apiToday(event);
+                    break;
+                case "api-count":
+                    event.reply("hi api-count").queue();
+                    break;
+                case "db-random":
+                    dbRandom(event);
+                    break;
+                case "db-count":
+                    int num = event.getOption("num").getAsInt();
+                    dbCount(event, num);
+                    break;
+                case "db-loop":
+                    int time = event.getOption("time").getAsInt();
+                    dbLoop(event, time);
+                    break;
+                case "db-all":
+                    dbAll(event);
+                    break;
+                case "db-add":
+                    String addedAuthor = event.getOption("author").getAsString();
+                    String addedQuote = event.getOption("quote").getAsString();
+                    dbAdd(event, addedAuthor, addedQuote);
+                    break;
+                case "db-update":
+                    int updatedId = event.getOption("id").getAsInt();
+                    String updatedAuthor = event.getOption("author").getAsString();
+                    String updatedQuote = event.getOption("quote").getAsString();
+                    dbUpdate(event, updatedId, updatedAuthor, updatedQuote);
+                    break;
+                case "db-delete":
+                    int deletedId = event.getOption("id").getAsInt();
+                    dbDelete(event, deletedId);
+                    break;
+                default:
+                    event.reply("이해할 수 없는 명령어 입니다.").queue();
+            }
         }
     }
 
