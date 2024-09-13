@@ -101,7 +101,7 @@ public class DiscordListener extends ListenerAdapter {
                         "  - time 단위 : s\n" +
                         "  - 단위 시간 마다 명언 출력\n" +
                         "- `/db-loop-stop`\n" +
-                        "  - dp-loop 종료" +
+                        "  - dp-loop 종료\n" +
                         "- `/db-all`\n" +
                         "  - DB 모든 명언 조회\n" +
                         "- `/db-add {author} {quote}`\n" +
