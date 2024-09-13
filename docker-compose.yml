@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - ./mysqldata:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASE=chatbotdb
