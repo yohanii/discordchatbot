@@ -7,7 +7,7 @@ spring:
   ## JPA Setting Info
   jpa:
     hibernate:
-      ddl-auto: none  # option type: create, create-drop, update, validate, none
+      ddl-auto: update  # option type: create, create-drop, update, validate, none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect  # 쿼리의 기준이 되는 데이터베이스 엔진을 설정합니다.
