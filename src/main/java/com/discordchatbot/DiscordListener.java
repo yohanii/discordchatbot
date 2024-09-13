@@ -28,6 +28,9 @@ public class DiscordListener extends ListenerAdapter {
     private static final String COMMAND_CHANNEL_NAME = "명언채널";
     private static final int CHUNK_SIZE = 15;
 
+    private static Timer timer;
+    private static TimerTask timerTask;
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         log.info("onSlashCommandInteraction : " + event.getName());
@@ -54,6 +57,9 @@ public class DiscordListener extends ListenerAdapter {
                 case "db-loop":
                     int time = event.getOption("time").getAsInt();
                     dbLoop(event, time);
+                    break;
+                case "db-loop-stop":
+                    dbLoopStop(event);
                     break;
                 case "db-all":
                     dbAll(event);
@@ -94,6 +100,8 @@ public class DiscordListener extends ListenerAdapter {
                         "- `/db-loop {time}`\n" +
                         "  - time 단위 : s\n" +
                         "  - 단위 시간 마다 명언 출력\n" +
+                        "- `/db-loop-stop`\n" +
+                        "  - dp-loop 종료\n" +
                         "- `/db-all`\n" +
                         "  - DB 모든 명언 조회\n" +
                         "- `/db-add {author} {quote}`\n" +
@@ -149,12 +157,29 @@ public class DiscordListener extends ListenerAdapter {
 
         event.reply("지금부터 " + time + "초마다 명언을 출력해요!").queue();
 
-        new Timer().schedule(new TimerTask() {
+        timer = new Timer();
+        timerTask = new TimerTask() {
             @Override
             public void run() {
                 event.getChannel().sendMessage(toMessage(quotesService.getDBRandomQuote())).queue();
             }
-        }, 3000L, time * 1000L);
+        };
+
+        timer.schedule(timerTask, 3000L, time * 1000L);
+    }
+
+    private void dbLoopStop(SlashCommandInteractionEvent event) {
+
+        event.reply("이제 더 이상 정해진 시간마다 명언을 출력하지 않아요.").queue();
+
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
+
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
 
     private void dbAll(SlashCommandInteractionEvent event) {
