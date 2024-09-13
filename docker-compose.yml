@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web:
-    image: yohanii/dicobot_prod:1.14
+    image: yohanii/dicobot_prod:1.15
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod

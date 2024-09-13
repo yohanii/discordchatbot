@@ -57,6 +57,10 @@ public class DiscordchatbotApplication {
 		);
 
 		commands.addCommands(
+				Commands.slash("db-loop-stop", "dp-loop 종료")
+		);
+
+		commands.addCommands(
 				Commands.slash("db-all", "DB 모든 명언 조회")
 		);
 

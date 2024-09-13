@@ -17,6 +17,8 @@
 - `/db-loop {time}`
   - time 단위 : s
   - 단위 시간 마다 명언 출력
+- `/db-loop-stop`
+  - dp-loop 종료
 - `/db-all`
   - DB 모든 명언 조회
 - `/db-add {author} {quote}`
