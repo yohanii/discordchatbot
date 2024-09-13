@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web:
-    image: yohanii/dicobot:1.0
+    image: yohanii/dicobot:1.1
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -17,6 +17,7 @@ services:
     restart: always
     volumes:
       - ./mysqldata:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASE=chatbotdb
