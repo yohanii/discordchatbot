@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web:
-    image: yohanii/dicobot:latest
+    image: yohanii/dicobot_prod:1.14
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -12,11 +12,15 @@ services:
       - "8080:8080"
     networks:
       - export_network
+    depends_on:
+      db:
+        condition: service_healthy
   db:
-    image: mysql:latest
+    image: mysql:8.0
     restart: always
     volumes:
       - ./mysqldata:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASE=chatbotdb
@@ -24,6 +28,11 @@ services:
       - "3306:3306"
     networks:
       - export_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   export_network:
