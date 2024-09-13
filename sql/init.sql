@@ -4,6 +4,14 @@ CREATE TABLE IF NOT EXISTS quote (
     quote VARCHAR(300) NOT NULL
 );
 
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_general_ci;
+
+ALTER DATABASE chatbotdb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE quote CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 INSERT INTO quote (author, quote) VALUES
     ('Edsger W. Dijkstra', '미래를 예측하는 가장 좋은 방법은 그것을 발명하는 것이다.'),
     ('Linus Torvalds', '말은 싸다. 코드를 보여줘.'),
