@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Component
@@ -25,6 +26,7 @@ public class DiscordListener extends ListenerAdapter {
     private final QuotesService quotesService;
 
     private static final String COMMAND_CHANNEL_NAME = "명언채널";
+    private static final int CHUNK_SIZE = 25;
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -159,11 +161,17 @@ public class DiscordListener extends ListenerAdapter {
 
         List<Quote> quotes = quotesService.findAll();
 
-        String result = quotes.stream()
+        IntStream.range(0, (quotes.size() + CHUNK_SIZE - 1) / CHUNK_SIZE)
+                .mapToObj(chunkIndex -> toReplyMessage(chunkIndex, quotes))
+                .forEach(chunk -> event.reply(chunk).queue());
+    }
+
+    private static String toReplyMessage(long chunkIndex, List<Quote> quotes) {
+        return quotes.stream()
+                .skip(chunkIndex * CHUNK_SIZE)
+                .limit(CHUNK_SIZE)
                 .map(DiscordListener::toMessage)
                 .collect(Collectors.joining("\n"));
-
-        event.reply(result).queue();
     }
 
     private void dbAdd(SlashCommandInteractionEvent event, String author, String quote) {
