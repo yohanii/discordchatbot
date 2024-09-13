@@ -26,7 +26,7 @@ public class DiscordListener extends ListenerAdapter {
     private final QuotesService quotesService;
 
     private static final String COMMAND_CHANNEL_NAME = "명언채널";
-    private static final int CHUNK_SIZE = 25;
+    private static final int CHUNK_SIZE = 15;
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
