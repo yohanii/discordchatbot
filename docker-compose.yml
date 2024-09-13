@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web:
-    image: yohanii/dicobot_prod:1.1
+    image: yohanii/dicobot_prod:1.2
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -12,6 +12,9 @@ services:
       - "8080:8080"
     networks:
       - export_network
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: mysql:latest
     restart: always
@@ -25,6 +28,11 @@ services:
       - "3306:3306"
     networks:
       - export_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   export_network:
