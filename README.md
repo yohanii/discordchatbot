@@ -1,4 +1,4 @@
-# 명언봇 - 디스코드챗봇
+# 🤖 명언봇 - 디스코드챗봇
 <img src="https://github.com/user-attachments/assets/cae62dd2-adcd-49ea-83ef-e6ba9681bbad" width=350>
 
 > 명언을 통해 동기부여 해주는 디스코드 챗봇입니다.
@@ -54,6 +54,7 @@
 <br>
 
 ### 🗺️ 아키텍처
+![discordchatbot_아키텍처](https://github.com/user-attachments/assets/879c4797-221f-4904-83b5-e2ca147f349d)
 
 
 <br>
