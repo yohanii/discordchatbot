@@ -61,7 +61,19 @@
 
 ### ⚠️ 트러블 슈팅
 
-- DB에서 Random한 명언 조회 시, 조회 오류 해결
+목차
+- [DB에서 Random한 명언 조회 시, 조회 오류 해결](#db에서-random한-명언-조회-시-조회-오류-해결)
+- [Docker compose로 init.sql 실행 안되는 문제](#docker-compose로-initsql-실행-안되는-문제)
+- [JDA String Characters 2000자 제한 문제](#jda-string-characters-2000자-제한-문제)
+- [init.sql로 생성한 테이블에, JPA가 Row 추가 못하는 문제](#initsql로-생성한-테이블에-jpa가-row-추가-못하는-문제)
+- [디스코드 답변 한글 깨지는 문제](#디스코드-답변-한글-깨지는-문제)
+- [로컬에서 도커 띄웠을 때, 도커 컨테이너에서 local DB 연결 안되는 문제](#로컬에서-도커-띄웠을-때-도커-컨테이너에서-local-db-연결-안되는-문제)
+
+
+
+<br>
+
+#### DB에서 Random한 명언 조회 시, 조회 오류 해결
   - 문제
     - ID들이 띄엄띄엄 있을 때, 조회 오류 다수 발생하는 상황
     - 테이블 row Count를 받아, 그 안에서 Random id를 뽑아 조회하는 기존 방식
@@ -73,7 +85,7 @@
       ```
 <br>
 
-- Docker compose로 init.sql 실행 안되는 문제
+#### Docker compose로 init.sql 실행 안되는 문제
   - 해결
     - JPA가 table 생성 못하도록, Docker Container 간 depends_on 설정
       - ```yaml
@@ -99,7 +111,7 @@
 
 <br>
 
-- JDA String Characters 2000자 제한 문제
+#### JDA String Characters 2000자 제한 문제
   - 문제
     - 디스코드 답변 String 2000자 제한으로 오류 발생
     - ```java
@@ -111,7 +123,7 @@
 
 <br>
 
-- init.sql로 생성한 테이블에, JPA가 Row 추가 못하는 문제
+#### init.sql로 생성한 테이블에, JPA가 Row 추가 못하는 문제
   - 문제
     - ID가 겹쳐서 발생한 문제
     - ```java
@@ -123,7 +135,7 @@
 
 <br>
 
-- 디스코드 답변 한글 깨지는 문제
+#### 디스코드 답변 한글 깨지는 문제
   - 문제
     - DB shell 접속해서 확인했을 때 정상이지만, 조회 후 답변 시 한글 깨지는 상황
   - 해결
@@ -140,7 +152,7 @@
 
 <br>
 
-- 로컬에서 도커 띄웠을 때, 도커 컨테이너에서 local DB 연결 안되는 문제
+#### 로컬에서 도커 띄웠을 때, 도커 컨테이너에서 local DB 연결 안되는 문제
   - 해결
     - url : localhost -> host.docker.internal
 
