@@ -160,10 +160,17 @@
 ---
 
 ### 😃 피드백
-- mac.bae(주강사)
+<img width="479" alt="image" src="https://github.com/user-attachments/assets/557793a4-64f5-4037-b92a-f76a3902ff8f">
+<img width="603" alt="image" src="https://github.com/user-attachments/assets/173a3cb0-a55a-44c1-970e-c010a0a3abe3">
+
+
+- mac.bae (피드백 반영완료)
   - 기능 요구사항에 따라 코드를 잘 작성하였습니다.
   - 기능과 역할에 따라 클래스 객체를 잘 설계하여 구현하였습니다.
   - DTO와 Entity를 활용하여 계층 간 통신 및 서비스 로직에서 데이터가 올바른 형식으로 처리될 수 있도록 잘 구현하였습니다.
   - getDBRandomQuotes / getDBRandomQuote 와 같이 데이터의 단수/복수 를 다루는 함수에서, 단수 함수를 활용하여 복수 함수를 구현한다면 동일 로직을 재사용하는 방식으로 코드를 리팩토링 할 수 있을 것 같습니다.
   - 즉, 복수 함수에서는 단수 함수를 N번 실행하는 방식으로 코드를 구현할 수 있습니다. 
   - 현재 코드에서는 함수를 수정하려면 두 가지 함수 모두 수정해야 하는 단점이 있습니다.
+- bryan.kim (피드백 반영 중)
+  - 하루에 하나 랜덤 출력 할 수 있으면 좋겠다.
+  - 현재도 있지만, 명령어가 직관적이지 않은듯
