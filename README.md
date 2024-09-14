@@ -140,7 +140,7 @@
   - 문제
     - DB shell 접속해서 확인했을 때 정상이지만, 조회 후 답변 시 한글 깨지는 상황
   - 해결
-    - datbase, table에 설정 추가
+    - database, table에 설정 추가
     - ```mysql
       SET character_set_client = utf8mb4;
       SET character_set_connection = utf8mb4;
